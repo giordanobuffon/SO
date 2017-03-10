@@ -3,3 +3,4 @@ DEC R1
 SBRS SREG, 1
 MOV R4, 8
 MOV R3, R1
+halt

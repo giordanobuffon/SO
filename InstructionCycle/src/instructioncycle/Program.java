@@ -17,8 +17,8 @@ public class Program {
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             while (br.ready()) {
-                String linha = br.readLine();
-                mainMemory.add(linha.toLowerCase());
+                String line = br.readLine();
+                mainMemory.add(line.toLowerCase());
             }
             br.close();
         } catch (IOException ioe) {

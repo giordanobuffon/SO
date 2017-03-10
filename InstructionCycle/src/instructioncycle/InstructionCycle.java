@@ -13,14 +13,13 @@ public class InstructionCycle {
         this.rb = registerBank;
         this.sreg = sreg;
 
-        boolean testHalt;
+        boolean testHalt = false;
         pc = 0;
-        while (pc < mainMemory.size()) {
+        while (!testHalt) {
             ir = mainMemory.get(pc);
             pc++;
             testHalt = decodeAndExecute();
-            if (testHalt)
-                break;
+            
         }
         return registerBank;
     }
@@ -52,6 +51,8 @@ public class InstructionCycle {
                 break;
             case "sbrs":
                 sbrs(decodInstructions);
+                break;
+            default:
                 break;
         }
         return testHalt;
