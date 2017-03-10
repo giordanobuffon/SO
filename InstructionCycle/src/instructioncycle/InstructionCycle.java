@@ -1,102 +1,116 @@
 package instructioncycle;
 
 import java.io.*;
-import java.util.ArrayList;
 
 public class InstructionCycle {
 
-    private ArrayList<String> mainMemory = new ArrayList<String>();
     private int pc; //Program Counter - CI
     private String ir; //Instruction Registrer - RI
-    private int[] registerBank = new int[5];
-    private boolean[] sreg = new boolean[8];
+    private RegisterBank rb;
+    private Sreg sreg;
 
-    public int[] startCycle(String path) throws IOException {
-        readFile(path);
+    public RegisterBank startCycle(MainMemory mainMemory, RegisterBank registerBank, Sreg sreg) {
+        this.rb = registerBank;
+        this.sreg = sreg;
+
+        boolean testHalt;
         pc = 0;
         while (pc < mainMemory.size()) {
             ir = mainMemory.get(pc);
             pc++;
-            decodeAndExecute();
+            testHalt = decodeAndExecute();
+            if (testHalt)
+                break;
         }
         return registerBank;
     }
 
-    private void readFile(String path) throws IOException {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(path));//"src/instructioncycle/InstructionsAssembler.txt"
-            while (br.ready()) {
-                String linha = br.readLine();
-                mainMemory.add(linha.toLowerCase());
-            }
-            br.close();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
-
     // decoding
-    private void decodeAndExecute() {
-        String[] decodedInstructions = ir.split(", | ");
-        switch (decodedInstructions[0]) {
+    private boolean decodeAndExecute() {
+        boolean testHalt = false;
+        String[] decodInstructions = ir.split(", | ");
+        switch (decodInstructions[0]) {
             case "add":
-                add(parseInt(decodedInstructions[1]), parseInt(decodedInstructions[2]));
+                add(decodInstructions);
                 break;
             case "bclr":
-                bclr(parseInt(decodedInstructions[1]));
+                bclr(decodInstructions);
                 break;
             case "dec":
-                dec(parseInt(decodedInstructions[1]));
+                dec(decodInstructions);
                 break;
             case "goto":
-                goTo(parseInt(decodedInstructions[1]));
+                goTo(decodInstructions);
                 break;
             case "halt":
-                return;
+                testHalt = true;
+                break;
             case "null":
                 break;
             case "mov":
-                mov(parseInt(decodedInstructions[1]), parseInt(decodedInstructions[2]));
+                mov(decodInstructions);
                 break;
             case "sbrs":
-                sbrs(parseInt(decodedInstructions[1]));
+                sbrs(decodInstructions);
                 break;
         }
+        return testHalt;
 
     }
 
     // execution
-    private int parseInt(String s) {
+    private int parseIntFormat(String s) {
+        s = s.replace("r", "");
         return Integer.parseInt(s);
     }
 
-    private void add(int rd, int ro) {
-        registerBank[rd] += ro;
+    private void add(String[] operands) {
+        int value;
+        int rd = parseIntFormat(operands[1]);
+        if (operands[2].charAt(0) == 'r') {
+            int ro = parseIntFormat(operands[2]);
+            value = rb.getRegisterBank(rd) + rb.getRegisterBank(ro);
+        } else {
+            int var = parseIntFormat(operands[2]);
+            value = rb.getRegisterBank(rd) + var;
+        }
+        rb.setRegisterBank(rd, value);
     }
 
-    private void bclr(int i) {
-        sreg[i] = false;
+    private void bclr(String[] operands) {
+        int position = Integer.parseInt(operands[1]);
+        sreg.setSreg(position, false);
     }
 
-    private void dec(int rd) {
-        registerBank[rd] -= 1;
-        if (registerBank[rd] == 0)
-            sreg[1] = true;
+    private void dec(String[] operands) {
+        int rd = parseIntFormat(operands[1]);
+        int value = rb.getRegisterBank(rd) - 1;
+        rb.setRegisterBank(rd, value);
+        if (value == 0) {
+            sreg.setSreg(1, true);
+        }
     }
 
-    private void goTo(int i) {
-        pc = i;
+    private void goTo(String[] operands) {
+        pc = parseIntFormat(operands[1]);
     }
 
-    private void mov(int rd, int ro) {
-        registerBank[rd] = ro;
+    private void mov(String[] operands) {
+        int value;
+        int rd = parseIntFormat(operands[1]);
+        if (operands[2].charAt(0) == 'r') {
+            int ro = parseIntFormat(operands[2]);
+            value = rb.getRegisterBank(ro);
+        } else {
+            value = parseIntFormat(operands[2]);
+        }
+        rb.setRegisterBank(rd, value);
     }
 
-    private void sbrs(int i) {
-        if (sreg[i])
+    private void sbrs(String[] operands) {
+        int position = Integer.parseInt(operands[2]);
+        if (sreg.getSreg(position))
             pc++;
     }
 
-
 }
-

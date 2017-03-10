@@ -1,4 +1,5 @@
-Vamos lá!
-E agora?
-Como fazer?
-E o que fazer?
+ADD R1, 1
+DEC R1
+SBRS SREG, 1
+MOV R4, 8
+MOV R3, R1
