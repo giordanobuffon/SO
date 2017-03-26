@@ -1,7 +1,5 @@
 package instructioncycle;
 
-import java.io.*;
-
 public class InstructionCycle {
 
     private int pc; //Program Counter - CI
@@ -9,18 +7,23 @@ public class InstructionCycle {
     private RegisterBank rb;
     private Sreg sreg;
 
-    public RegisterBank startCycle(MainMemory mainMemory, RegisterBank registerBank, Sreg sreg) {
+    public RegisterBank startCycle(MainMemory mainMemory, RegisterBank registerBank, Sreg sreg) throws IndexOutOfBoundsException {
         this.rb = registerBank;
         this.sreg = sreg;
 
         boolean testHalt = false;
         pc = 0;
-        while (!testHalt) {
-            ir = mainMemory.get(pc);
-            pc++;
-            testHalt = decodeAndExecute();
-            
+        try {
+            while (!testHalt) {
+                ir = mainMemory.get(pc);
+                pc++;
+                testHalt = decodeAndExecute();
+
+            }
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(e.getLocalizedMessage());
         }
+
         return registerBank;
     }
 
@@ -56,7 +59,6 @@ public class InstructionCycle {
                 break;
         }
         return testHalt;
-
     }
 
     // execution

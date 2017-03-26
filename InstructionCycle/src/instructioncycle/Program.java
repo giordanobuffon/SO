@@ -22,7 +22,7 @@ public class Program {
             }
             br.close();
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            ioe.getMessage();
         }
 
         InstructionCycle instructionCycle = new InstructionCycle();
@@ -32,7 +32,5 @@ public class Program {
         for (int i = 0; i < finalRegisterBank.getSize(); i++) {
             System.out.printf("R%d -> %d\n", i, finalRegisterBank.getRegisterBank(i));
         }
-
     }
-
 }

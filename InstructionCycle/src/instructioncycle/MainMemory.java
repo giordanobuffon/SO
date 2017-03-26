@@ -10,11 +10,11 @@ public class MainMemory {
         mainMemory.add(line);
     }
 
-    public int size() {
-        return mainMemory.size();
-    }
-
     public String get(int i) {
         return mainMemory.get(i);
     }
 }
+
+
+
+
