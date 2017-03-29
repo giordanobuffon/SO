@@ -4,7 +4,7 @@ public class Program {
     public static void main(String[] args) {
         int numClient = 5;
         int numPrinter = 4;
-        int sleepTime = 100;
+        int clientSleepTime = 100;
         int printTime = 500;
         int maxQueueSize = 40;
 
@@ -15,7 +15,7 @@ public class Program {
 
         // creating clients
         for (int i = 0; i < numClient; i++) {
-            clients[i] = new Client((i + 1), printQueue, sleepTime);
+            clients[i] = new Client((i + 1), printQueue, clientSleepTime);
         }
 
         // creating client threads

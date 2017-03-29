@@ -17,6 +17,7 @@ public class PrintQueue {
         queue = new String[maxSize];
     }
 
+    // for printers
     public String nextDocument() {
         if (readingIndex < maxSize) {
             String document = "<error>";
@@ -39,13 +40,14 @@ public class PrintQueue {
         return "Finished print list ";
     }
 
+    // for clients
     public void setDocument(String document) {
         lock.lock();
         queue[writingIndex] = document;
         writingIndex++;
         condition.signalAll();
-        lock.unlock();
         queueCompleted = writingIndex >= maxSize;
+        lock.unlock();
     }
 
     public boolean queueCompleted() {
